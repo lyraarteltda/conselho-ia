@@ -751,13 +751,30 @@
     document.body.classList.toggle('console-open', open);
   }
 
-  // Init when the gate reveals the app (COR-008 event + DOMContentLoaded fallback)
+  // Init when the gate reveals the app. Three independent triggers so wire() runs
+  // no matter which path shows app-screen (wire() is idempotent via the `wired` flag):
+  //  1) the COR-008 'maestria:app-ready' event (fired by the gate's own grant flow)
+  //  2) a MutationObserver on #app-screen.class — catches the key-screen "Entrar no
+  //     console" path where ApiKeyManager calls showScreen('app-screen') WITHOUT
+  //     re-dispatching the ready event (the real gate does not fire it on that call)
+  //  3) a DOMContentLoaded check for a returning member already on app-screen
   window.addEventListener('maestria:app-ready', wire);
-  document.addEventListener('DOMContentLoaded', function () {
-    // if the app screen is already visible (returning member), wire now
-    setTimeout(function () {
-      var app = document.getElementById('app-screen');
-      if (app && app.classList.contains('active')) wire();
-    }, 120);
-  });
+
+  function watchAppScreen() {
+    var app = document.getElementById('app-screen');
+    if (!app) return;
+    if (app.classList.contains('active')) { wire(); return; }
+    try {
+      var obs = new MutationObserver(function () {
+        if (app.classList.contains('active')) wire();
+      });
+      obs.observe(app, { attributes: true, attributeFilter: ['class'] });
+    } catch (e) { /* MutationObserver unavailable — event + fallback still cover it */ }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', watchAppScreen);
+  } else {
+    watchAppScreen();
+  }
 })();
