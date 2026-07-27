@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <script>/* gate-bootstrap: capture an early login submit before the remote gate wires up, so the first click is never lost */
+  (function(){function h(e){var f=e.target;if(f&&f.id==='gate-form'&&!window.MembershipGate){e.preventDefault();e.stopImmediatePropagation();window.__gateEarlySubmit=true;}}window.addEventListener('submit',h,true);window.__gateBootstrapDisarm=function(){window.removeEventListener('submit',h,true);};})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conselho IA — Maestros da IA</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://gate.maestrosdaia.com">
+  <link rel="preload" href="https://gate.maestrosdaia.com/v1/membership-gate.js" as="script">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2316181d'/%3E%3Crect x='6' y='6' width='3' height='20' rx='1.5' fill='%232a2d34'/%3E%3Crect x='14.5' y='6' width='3' height='20' rx='1.5' fill='%232a2d34'/%3E%3Crect x='23' y='6' width='3' height='20' rx='1.5' fill='%232a2d34'/%3E%3Crect x='4.5' y='9' width='6' height='4' rx='1.5' fill='%23f5b301'/%3E%3Crect x='13' y='17' width='6' height='4' rx='1.5' fill='%23f5b301'/%3E%3Crect x='21.5' y='13' width='6' height='4' rx='1.5' fill='%23f5b301'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <!-- MEMBERSHIP GATE -->
+  <div id="gate-screen" class="screen active">
+    <div class="gate-container">
+      <div class="gate-console" aria-hidden="true">
+        <span class="gcf"><i></i><b style="--h:38%"></b></span>
+        <span class="gcf"><i></i><b style="--h:70%"></b></span>
+        <span class="gcf"><i></i><b style="--h:52%"></b></span>
+        <span class="gcf"><i></i><b style="--h:84%"></b></span>
+        <span class="gcf"><i></i><b style="--h:60%"></b></span>
+      </div>
+      <div class="gate-header">
+        <p class="gate-kicker">MESA DE CONSELHEIROS · IA</p>
+        <h1 class="gradient-text">Conselho IA</h1>
+        <p class="subtitle">Converse com conselheiros de marketing e <strong>regule cada um como uma mesa de som</strong> — honestidade, ousadia, profundidade e mais. O primeiro canal no ar: <strong>O Arquiteto de Ofertas</strong>.</p>
+        <p class="community-badge">Exclusivo para membros da Comunidade Maestros da IA</p>
+      </div>
+
+      <form id="gate-form" class="gate-form">
+        <div class="form-group">
+          <label for="gate-email">Seu e-mail cadastrado</label>
+          <input type="email" id="gate-email" placeholder="seu@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="gate-phone">Seu WhatsApp (com DDD)</label>
+          <input type="tel" id="gate-phone" placeholder="11999999999" autocomplete="tel">
+        </div>
+        <button type="submit" id="gate-submit" class="btn-primary">
+          <span class="btn-text">Ligar a mesa</span>
+          <span class="btn-loading" style="display:none;">Verificando...</span>
+        </button>
+        <p id="gate-error" class="error-message" style="display:none;"></p>
+      </form>
+
+      <p class="gate-footer">Ainda não é membro? <a href="https://comunidade.maestrosdaia.com" target="_blank" rel="noopener noreferrer">Conheça a Comunidade Maestros da IA</a></p>
+    </div>
+  </div>
+
+  <!-- API KEY SETUP (shown after membership verification) -->
+  <div id="key-screen" class="screen">
+    <div class="key-container">
+      <h2>Conecte sua chave da OpenRouter</h2>
+      <p class="subtitle">Sua chave fica salva <strong>apenas no seu navegador</strong> — nunca é enviada aos nossos servidores. Com uma única chave da OpenRouter você acessa Claude, GPT, Gemini, DeepSeek e mais.</p>
+
+      <div class="key-model-row">
+        <label for="key-model-select">Modelo padrão</label>
+        <select id="key-model-select" class="model-select"></select>
+      </div>
+
+      <div id="key-inputs" class="key-inputs">
+        <!-- Dynamically populated by api-key-manager.js -->
+      </div>
+
+      <div class="key-actions">
+        <button id="key-continue" class="btn-primary" disabled>Entrar no console</button>
+        <button id="key-skip" class="btn-secondary">Pular por enquanto</button>
+      </div>
+
+      <details class="key-info">
+        <summary>Como consigo uma chave da OpenRouter?</summary>
+        <div class="key-info-content">
+          <p><strong>OpenRouter:</strong> acesse <code>openrouter.ai/keys</code>, crie uma chave (começa com <code>sk-or-</code>) e adicione créditos. Uma só chave dá acesso a todos os modelos do seletor (Claude, GPT, Gemini, DeepSeek, Grok e outros).</p>
+          <p class="key-info-note">A chave é sua e roda com os seus créditos (modelo BYOK). Você paga direto ao provedor, sem intermediários.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION -->
+  <div id="app-screen" class="screen">
+    <header class="app-header">
+      <div class="header-left">
+        <span class="header-mark" aria-hidden="true">
+          <i style="--h:40%"></i><i style="--h:72%"></i><i style="--h:56%"></i>
+        </span>
+        <div class="header-titles">
+          <h1 class="app-title">Conselho IA</h1>
+          <p class="app-sub">Mesa de conselheiros</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="board-toggle" class="btn-icon board-toggle" title="Abrir/fechar a mesa" aria-label="Mesa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/><circle cx="6" cy="9" r="2" fill="currentColor"/><circle cx="12" cy="15" r="2" fill="currentColor"/><circle cx="18" cy="8" r="2" fill="currentColor"/></svg>
+        </button>
+        <a href="about.html" class="btn-icon" title="Sobre esta ferramenta" aria-label="Sobre">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </a>
+        <button id="manage-keys-btn" class="btn-icon" title="Gerenciar chave de API">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        </button>
+        <button id="logout-btn" class="btn-icon" title="Sair">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- ===== THE MIXING BOARD (console) ===== -->
+      <aside id="console-panel" class="console-panel">
+        <div class="console-scroll">
+
+          <!-- Channel / expert selector -->
+          <section class="console-block">
+            <div class="block-label">CANAL · CONSELHEIRO</div>
+            <div class="expert-select-wrap">
+              <select id="expert-select" class="expert-select" aria-label="Escolher conselheiro"></select>
+            </div>
+            <p id="expert-tagline" class="expert-tagline"></p>
+          </section>
+
+          <!-- Faders -->
+          <section class="console-block">
+            <div class="block-label">PERSONALIDADE · FADERS</div>
+            <div id="fader-rack" class="fader-rack"><!-- faders injected by app.js --></div>
+            <button id="faders-reset" class="btn-ghost btn-block">Resetar faders</button>
+          </section>
+
+          <!-- Master: model + presets -->
+          <section class="console-block">
+            <div class="block-label">MASTER · MODELO</div>
+            <div class="master-strip">
+              <div class="vu-meter" id="vu-meter" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="master-controls">
+                <label for="model-select" class="mini-label">Modelo de IA</label>
+                <select id="model-select" class="model-select"></select>
+                <label for="preset-select" class="mini-label">Preset da mesa</label>
+                <select id="preset-select" class="model-select">
+                  <option value="">— presets —</option>
+                  <option value="mentor">Mentor equilibrado</option>
+                  <option value="brutal">Sócio brutalmente honesto</option>
+                  <option value="executivo">Consultor executivo</option>
+                  <option value="professor">Professor didático</option>
+                  <option value="visionario">Visionário ousado</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick-action deliverables -->
+          <section class="console-block">
+            <div class="block-label">ENTREGÁVEIS · 1 CLIQUE</div>
+            <div class="quick-actions" id="quick-actions">
+              <button class="qa-btn" data-qa="grandslam">Montar Grand Slam Offer</button>
+              <button class="qa-btn" data-qa="diagnose">Diagnosticar minha oferta</button>
+              <button class="qa-btn" data-qa="bonus">Stack de bônus</button>
+              <button class="qa-btn" data-qa="guarantee">Criar garantia irresistível</button>
+              <button class="qa-btn" data-qa="rewrite">Reescrever minha oferta</button>
+              <button class="qa-btn" data-qa="price">Ancorar preço e valor</button>
+            </div>
+            <p class="qa-hint">Entrega um documento pronto pra colar no seu funil.</p>
+          </section>
+
+        </div>
+      </aside>
+
+      <!-- ===== CHAT ===== -->
+      <section class="chat-panel">
+        <div class="chat-topbar">
+          <div class="chat-title">
+            <span id="chat-expert-name">O Arquiteto de Ofertas</span>
+            <span class="chat-motor" id="chat-motor">motor: frameworks de Alex Hormozi</span>
+          </div>
+          <div class="chat-actions">
+            <button id="export-btn" class="btn-ghost btn-sm" title="Exportar a conversa em .md">Exportar</button>
+            <button id="clear-btn" class="btn-ghost btn-sm" title="Limpar a conversa">Limpar</button>
+          </div>
+        </div>
+
+        <div id="chat-log" class="chat-log" aria-live="polite">
+          <!-- messages injected by app.js -->
+        </div>
+
+        <div class="composer">
+          <div class="composer-inner">
+            <textarea id="composer-input" class="composer-input" rows="1" placeholder="Descreva seu produto, oferta ou dúvida de marketing…" autocomplete="off"></textarea>
+            <button id="send-btn" class="send-btn" title="Enviar" aria-label="Enviar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <p class="composer-legal" id="composer-legal">Ferramenta educacional. <strong>Não afiliada nem endossada por Alex Hormozi.</strong> As respostas são geradas por IA — valide antes de aplicar.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Feito com carinho para a comunidade <strong>Maestros da IA</strong></p>
+      <p class="footer-links">
+        <a href="about.html" target="_blank" rel="noopener noreferrer">Sobre</a>
+        <span class="footer-sep">·</span>
+        <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+        <span class="footer-sep">·</span>
+        <a href="data-deletion.html" target="_blank" rel="noopener noreferrer">Solicitar Exclusão de Dados</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- API Key Manager Modal -->
+  <div id="key-modal" class="modal" style="display:none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Gerenciar chave de API</h3>
+        <button id="modal-close" class="btn-icon">&times;</button>
+      </div>
+      <div class="key-model-row">
+        <label for="model-select-modal">Modelo de IA</label>
+        <select id="model-select-modal" class="model-select"></select>
+      </div>
+      <div id="modal-key-inputs" class="key-inputs"></div>
+      <div class="modal-actions">
+        <button id="modal-save" class="btn-primary">Salvar</button>
+        <button id="modal-clear" class="btn-danger">Limpar chave</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="kill-switch.js"></script>
+  <script src="rate-limiter.js"></script>
+  <script src="https://gate.maestrosdaia.com/v1/membership-gate.js"></script>
+  <script src="api-key-manager.js"></script>
+  <script src="feedback-widget.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
